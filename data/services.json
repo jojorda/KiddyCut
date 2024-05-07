@@ -1,0 +1,58 @@
+{
+  "kidsServices": [
+    {
+      "name": "Kiddy Cut Baby",
+      "price": 100000,
+      "id": 73930385
+    },
+    {
+      "name": "Kiddy Cut Boy",
+      "price": 105000,
+      "id": 17806751
+    },
+    {
+      "name": "Kiddy Cut Girl",
+      "price": 110000,
+      "id": 98443197
+    },
+    {
+      "name": "Kiddy Cut Skin",
+      "price": 120000,
+      "id": 98443198
+    }, {
+      "name": "Kiddy Cut Skin Head", 
+      "price": 135000,
+      "id": 98443199
+    }, {
+      "name": "Kiddy Cut Bang Trim",
+      "price": 60000,
+      "id": 9843120
+    }, {
+      "name": "Kiddy Hair Styling",
+      "price": 70000,
+      "id": 9843120
+    }, {
+      "name": "Kiddy Hair Treatment",
+      "price": 100000,
+      "id": 943121
+    }, {
+      "name": "Kiddy Bath",
+      "price": 25000,
+      "id": 93122
+    }
+  ],
+  "parentsServices": [{
+    "name": "Parents Cut",
+    "price": 120000,
+    "id": 20835}, 
+    {
+      "name": "Parents Hair Styling", 
+      "price": 85000,
+      "id": 20836
+    }, {
+      "name": "Parents Hair Treatment",
+      "price"  : 105000,
+      "id": 208
+    }
+  ]
+}
