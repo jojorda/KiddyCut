@@ -62,27 +62,6 @@ const ProductKeranjang = () => {
     return total;
   };
 
-  // const calculateTotalPrice = () => {
-  //   let total = 0;
-
-  //   cart.forEach((item) => {
-  //     let productTotal = item.priceItem * item.totalItem;
-
-  //     let addonsTotal = 0;
-  //     if (item.fullDataAddons) {
-  //       addonsTotal = item.fullDataAddons.reduce(
-  //         (accumulator, addon) => accumulator + addon.price,
-  //         0
-  //       );
-  //     }
-
-  //     total += productTotal + addonsTotal;
-  //   });
-
-  //   return total;
-  // };
-  // close hitung total data keranjang
-
   // function menambahkan item
   const incrementQuantity = (item) => {
     const updatedCart = cart.map((cartItem) => {
@@ -167,12 +146,7 @@ const ProductKeranjang = () => {
             title: "text-sm",
           },
         }).then(() => {
-          // setClickCounts((prevClickCounts) => {
-          //   const updatedClickCounts = { ...prevClickCounts };
-          //   delete updatedClickCounts[itemId];
-          //   return updatedClickCounts;
-          // });
-          // window.location.reload();
+          
         });
       }
     });
@@ -303,19 +277,9 @@ const ProductKeranjang = () => {
                     return (
                       <div
                         key={outletName}
-                        // className="border p-2  border-[#091F4B] rounded-lg mt-2"
                         className="py-2 mt-2 "
                       >
-                        {/* <div className="flex items-center">
-                          <div>
-                            <div
-                              // Gunakan outletName dalam URL
-                              className="text-lg font-semibold text-gray-900 mt-"
-                            >
-                              {outletName}
-                            </div>
-                          </div>
-                        </div> */}
+                      
                         <div>
                           {cart.map((item) => (
                             <div

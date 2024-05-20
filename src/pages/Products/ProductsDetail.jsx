@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import Topbar2 from "../../components/topbar/Topbar2";
 import { motion } from "framer-motion";
 import ProductDetail from "../../components/Products/ProductDetailWithMemberId";
+// import ProductDetail from "../../components/Products/ProductDetailWithMemberIdNew";
 
 const ProductsDetail = () => {
   const navigate = useNavigate();

@@ -45,7 +45,7 @@ function CheckOut({ isOpen, closeModal }) {
       setFormData(items);
     }
   }, []);
-  // console.log(formData)
+  
 
   // console.log("sasa", qrStatic);
   const handlePromoSelection = (promo) => {
@@ -805,6 +805,46 @@ function CheckOut({ isOpen, closeModal }) {
   };
   //  close print receipt
 
+
+  // send customer data to backoffice
+  const postCustomer = async () => {
+    try {
+      const API_URL = import.meta.env.VITE_API_KEY;
+      const token = localStorage.getItem("token");
+      const formData = JSON.parse(localStorage.getItem("formData") || []);
+      const sendData = {
+        name: formData.name,
+        phone_number: formData.phoneNumber,
+        email: formData.email || "jono@gmail.com",
+        address: formData.address || "",
+        outlet_id: data_Business.outletid,
+      };
+  
+      const response = await axios.post(
+        `${API_URL}/api/v1/customer`,
+        sendData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      console.log("Customer data posted successfully:", response.data);
+      // Handle successful response here
+    } catch (error) {
+      console.error("Error posting customer data:", error);
+      if (error.response) {
+        console.error("Server response:", error.response.data);
+      }
+      // Handle error here
+    }
+  };
+  
+
+  // close send customer data to backoffice
+
   // handle pembayaran cash
   const handleCash = async () => {
     try {
@@ -971,9 +1011,15 @@ function CheckOut({ isOpen, closeModal }) {
               });
           }
         }
+
+        // post customer
+        postCustomer()
+
         // console.log("datasend", response1);
         closeModal();
         handlePaymentCashApprovalActions(transactionData);
+
+
 
         // Pastikan bahwa localStorage.removeItem("cart") berjalan tanpa kesalahan
         localStorage.removeItem("cart");
@@ -1203,7 +1249,7 @@ function CheckOut({ isOpen, closeModal }) {
                   </>
                 ) : (
                   <div className="overflow-auto">
-                    <div className="mb-4 md:space-x-8">
+                    <div className="mb-4 md:space-x-4">
                       <div className="bg-gray-300 p-3 rounded-lg">
                         <div className="flex justify-between">
                           <h3 className="pl-2 text-xl">{formData.name}</h3>
@@ -1331,7 +1377,6 @@ function CheckOut({ isOpen, closeModal }) {
                             Total: {totalPriceAfterPromo}
                           </p>
                         </div> */}
-
                         <span className="font-semibold">Total Harga:</span>
                         <span>
                           Rp. {totalPriceAfterPromo.toLocaleString("id-ID")}

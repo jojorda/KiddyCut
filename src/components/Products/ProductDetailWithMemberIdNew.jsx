@@ -24,7 +24,7 @@ const ProductDetail = () => {
   const API_URL = import.meta.env.VITE_API_KEY;
 
   const hairstylists = ["Hani", "Rizky", "Dina", "Mega"];
-  // const users = ["Vina", "Vino", "Vincent", "John", "Jane"]; 
+  // const users = ["Vina", "Vino", "Vincent", "John", "Jane"];
   const [filteredMemberData, setFilteredMemberData] = useState(null);
   const [selectedHairstylist, setSelectedHairstylist] = useState("");
   const [name, setName] = useState("");
@@ -35,8 +35,14 @@ const ProductDetail = () => {
   const [suggestions, setSuggestions] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [totalItem, setTotalItem] = useState(1);
-  const [isMember, setIsMember] = useState(false);
+
+  const [customers, setCustomers] = useState([]);
   const [customersName, setCustomersName] = useState([]);
+
+  // member state
+  const [isMember, setIsMember] = useState(false);
+  const [phoneNumbersMember, setPhoneNumbersMember] = useState("");
+  const [filteredCustomer, setFilteredCustomer] = useState(null);
 
   // useState for cart
   const [cart, setCart] = useState([]);
@@ -47,23 +53,72 @@ const ProductDetail = () => {
 
   const navigate = useNavigate();
 
-  const handleCheckboxChange = () => {
-    setIsMember((isMember) => !isMember);
-    if (!isMember) {
-      setMemberId(null);
-      setFilteredMemberData(null);
-      setBirthdate("");
+  const checkMemberData = async () => {
+    if (!memberId || !phoneNumbersMember) {
+      // alert("Please enter both Member ID and Phone Number");
+      Swal.fire({
+        icon: "warning",
+        title: "Oops...",
+        text: "Mohon masukkan member ID dan nomor telepon",
+      });
+      return;
+    }
+    // console.log(customers);
+    // console.log(memberId, phoneNumbersMember);
+    // Filter customers based on memberId and phoneNumbersMember
+    const filteredCustomer = customers.filter(
+      (customer) =>
+        customer.id === +memberId &&
+        customer.phone_number === phoneNumbersMember
+    );
+    console.log(filteredCustomer);
+
+    if (filteredCustomer.length > 0) {
+      Swal.fire({
+        icon: "success",
+        title: "Data member ditemukan",
+      });
+      setFilteredCustomer(filteredCustomer[0]); // Assuming only one match
+      
+    } else {
+      setFilteredCustomer(null);
+      Swal.fire({
+        icon: "warning",
+        title: "Data member tidak ditemukan",
+        text: "Mohon cek kembali member ID dan nomor telepon"
+      });
     }
   };
 
-  // filter selected memberId
-  const handleInputMemberId = (e) => {
-    const { value } = e.target;
-    setMemberId(value);
-    // Filter the JSON data based on the entered memberId
-    const filtered = memberList.find((item) => item.id === parseInt(value));
-    setFilteredMemberData(filtered);
+  const handleCheckboxChange = () => {
+    setIsMember((isMember) => !isMember);
+    // if (!isMember) {
+    //   setMemberId("");
+    //   setFilteredMemberData("");
+    //   setBirthdate("");
+    //   setFilteredCustomer("");
+    //   setPhoneNumbersMember("");
+    // } 
   };
+
+  useEffect(() => {
+    if (!isMember) {
+      setMemberId("");
+      setFilteredMemberData("");
+      setBirthdate("");
+      setFilteredCustomer("");
+      setPhoneNumbersMember("");
+    }
+  }, [isMember]);
+
+  // filter selected memberId
+  // const handleInputMemberId = (e) => {
+  //   const { value } = e.target;
+  //   setMemberId(value);
+  //   // Filter the JSON data based on the entered memberId
+  //   const filtered = memberList.find((item) => item.id === parseInt(value));
+  //   setFilteredMemberData(filtered);
+  // };
 
   let counter = 2000;
 
@@ -78,6 +133,64 @@ const ProductDetail = () => {
     return formattedNumber;
   }
 
+  // const handleFormSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (!selectedHairstylist) {
+  //     Swal.fire({
+  //       icon: "warning",
+  //       title: "Oops...",
+  //       text: "Mohon pilih hairstylist terlebih dahulu",
+  //     });
+  //     return;
+  //   }
+  //   let formData;
+  //   if (filteredMemberData) {
+  //     formData = {
+  //       service: detail.name,
+  //       selectedHairstylist,
+  //       name: filteredMemberData.name,
+  //       memberId,
+  //       phoneNumber: filteredMemberData.phone,
+  //       birthdate: filteredMemberData.birthdate,
+  //       gender: filteredMemberData.gender,
+  //       totalPrice,
+  //     };
+  //   } else {
+  //     if (!gender) {
+  //       Swal.fire({
+  //         icon: "warning",
+  //         title: "Oops...",
+  //         text: "Opsi jenis kelamin belum dipilih",
+  //       });
+  //       return;
+  //     }
+  //     formData = {
+  //       service: detail.name,
+  //       selectedHairstylist,
+  //       name,
+  //       memberId: generateRandom4DigitNumber(),
+  //       phoneNumber,
+  //       birthdate,
+  //       gender,
+  //       totalPrice,
+  //     };
+  //   }
+
+  //   // Convert the form data to a JSON string
+  //   const formDataJSON = JSON.stringify(formData);
+  //   // Save the form data to localStorage
+  //   localStorage.setItem("formData", formDataJSON);
+
+  //   // Clear form fields
+  //   setSelectedHairstylist("");
+  //   setName("");
+  //   setMemberId("");
+  //   setPhoneNumber("");
+  //   setBirthdate("");
+  //   setGender("");
+
+  //   navigate("/payment");
+  // };
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -90,27 +203,29 @@ const ProductDetail = () => {
       return;
     }
     let formData;
-    if (filteredMemberData) {
+    if (filteredCustomer) {
       formData = {
         service: detail.name,
         selectedHairstylist,
-        name: filteredMemberData.name,
+        name: filteredCustomer.name,
         memberId,
-        phoneNumber: filteredMemberData.phone,
-        birthdate: filteredMemberData.birthdate,
-        gender: filteredMemberData.gender,
+        phoneNumber: phoneNumbersMember,
+        birthdate: filteredCustomer.bod || "",
+        gender: filteredMemberData.sex || "",
         totalPrice,
       };
     } else {
-      if (!gender) {
-        Swal.fire({
-          icon: "warning",
-          title: "Oops...",
-          text: "Opsi jenis kelamin belum dipilih",
-        });
-        return;
-      }
-    }
+      formData = {
+        service: detail.name,
+        selectedHairstylist,
+        name: name,
+        memberId,
+        phoneNumber: phoneNumber,
+        birthdate: birthdate,
+        gender: gender,
+        totalPrice,
+      };
+    } 
 
     // Convert the form data to a JSON string
     const formDataJSON = JSON.stringify(formData);
@@ -176,7 +291,7 @@ const ProductDetail = () => {
   // get customer names
   // https://api.beetpos.com/api/v1/customer
   useEffect(() => {
-    const getCustomerNames = async () => {
+    const getCustomers = async () => {
       try {
         const API_URL = import.meta.env.VITE_API_KEY;
         const token = localStorage.getItem("token");
@@ -186,8 +301,12 @@ const ProductDetail = () => {
             Authorization: `Bearer ${token}`,
           },
         });
+        const customersData = response.data.data;
         // Extract names directly and set them
-        const customerNames = response.data.data.map(customer => customer.name);
+        const customerNames = response.data.data.map(
+          (customer) => customer.name
+        );
+        setCustomers(customersData);
         setCustomersName(customerNames);
       } catch (error) {
         if (error.response) {
@@ -196,10 +315,9 @@ const ProductDetail = () => {
         setLoading(false);
       }
     };
-    getCustomerNames();
+    getCustomers();
   }, []);
   // close get customer names
-
 
   // get data produk detail
   useEffect(() => {
@@ -308,6 +426,13 @@ const ProductDetail = () => {
   };
   // close fungsi untuk mengget data Addon/Tambahan
 
+  // get data keranjang
+  // useEffect(() => {
+  //   const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
+  //   setCart(storedCart);
+  //   handleGetProduct();
+  // }, []);
+
   // get data cart localStorage
   useEffect(() => {
     const storedCart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -326,8 +451,8 @@ const ProductDetail = () => {
         });
         return;
       }
-      if (filteredMemberData) {
-        setGender(filteredMemberData.gender);
+      if (filteredCustomer) {
+        setGender(filteredCustomer.gender || null);
       } else {
         if (!gender) {
           Swal.fire({
@@ -374,6 +499,7 @@ const ProductDetail = () => {
         price_addons_total: addonsTotalPrice * totalItem || 0,
         price_total: amount * totalItem,
         selectedHairstylists: selectedHairstylist,
+        name: name
       };
 
       const existingCart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -562,13 +688,14 @@ const ProductDetail = () => {
                   <input
                     type="number"
                     value={isMember ? memberId : ""}
-                    onChange={handleInputMemberId}
+                    onChange={(e) => setMemberId(e.target.value)}
                     className="border-slate-950 border-2  rounded-md block w-full p-3 mt-1 disabled:bg-[#e0e0e0]"
                     required
                     disabled={!isMember}
                   />
                 </div>
 
+                {/* checkbox memberId */}
                 <div>
                   <label>
                     <input type="checkbox" onChange={handleCheckboxChange} />
@@ -577,102 +704,47 @@ const ProductDetail = () => {
                   <br />
                 </div>
 
-                {filteredMemberData && isMember ? (
-                  <>
-                    <div>
-                      {/* nama */}
-                      <div className="mt-2">
-                        <label className="text-lg text-[#463E3F] ">Nama</label>
-                        <input
-                          type="text"
-                          value={filteredMemberData.name}
-                          className="border-slate-950 border-2 rounded-md block w-full p-3 mt-1 read-only:bg-[#e0e0e0]"
-                          readOnly
-                        />
-                      </div>
+                {/* phone number for member */}
+                {isMember && (
+                  <div className="mt-5">
+                    <label className="font-sm text-[#463E3F] text-lg">
+                      No HP
+                    </label>
+                    <input
+                      type="number"
+                      value={phoneNumbersMember}
+                      className="border-slate-950 border-2  rounded-md block w-full p-3 mt-1 read-only:bg-[#e0e0e0]"
+                      required
+                      onChange={(e) => setPhoneNumbersMember(e.target.value)}
+                    />
+                  </div>
+                )}
+                {/* close phone number for member */}
 
-                      {/* phone number */}
-                      <div className="mt-5">
-                        <label className="font-sm text-[#463E3F] text-lg">
-                          No HP
-                        </label>
-                        <input
-                          type="number"
-                          value={filteredMemberData?.phone}
-                          className="border-slate-950 border-2  rounded-md block w-full p-3 mt-1 read-only:bg-[#e0e0e0]"
-                          required
-                          readOnly
-                        />
-                      </div>
-
-                      {/* birthdate */}
-                      <div className="mt-5">
-                        <label className="font-sm text-[#463E3F] text-lg">
-                          Tanggal Lahir
-                        </label>
-                        <input
-                          type="date"
-                          value={formatDate(filteredMemberData.birthdate)}
-                          className="border-slate-950 border-2 rounded-md block w-full p-3 mt-1 read-only:bg-[#e0e0e0]"
-                          min="2007-01-01"
-                          required
-                          readOnly
-                        />
-                      </div>
-
-                      {/* male/female */}
-                      <ul className="grid gap-4 max-w-80 grid-cols-2 w-1/2 text-center mt-5">
-                        <li className="max-w-40">
-                          <input
-                            type="radio"
-                            id="male"
-                            name="gender"
-                            value="male"
-                            checked={filteredMemberData.gender === "male"}
-                            className="hidden peer"
-                            readOnly
-                          />
-                          <label
-                            htmlFor="male"
-                            className="inline-flex items-center justify-center w-full p-5 text-black bg-white  rounded-lg cursor-pointer  peer-checked:border-[#B3B3B3] peer-checked:bg-[#6C1E5D]
-                  peer-checked:text-white hover:text-gray-600 hover:bg-gray-100 max-w-40 border-2 border-[#463E3F]"
-                          >
-                            <div className="block text-center">
-                              <div className="w-full text-lg font-normal text-center">
-                                Male
-                              </div>
-                            </div>
-                          </label>
-                        </li>
-                        <li className="max-w-40">
-                          <input
-                            type="radio"
-                            id="female"
-                            name="gender"
-                            value="female"
-                            className="hidden peer"
-                            checked={filteredMemberData.gender === "female"}
-                            readOnly
-                          />
-                          <label
-                            htmlFor="female"
-                            className="inline-flex items-center justify-center w-full p-5 text-black bg-white  rounded-lg cursor-pointer  peer-checked:border-[#B3B3B3] peer-checked:bg-[#6C1E5D] peer-checked:text-white hover:text-gray-600 hover:bg-gray-100  border-[#463E3F] max-w-40 border-2 "
-                          >
-                            <div className="block">
-                              <div className="w-full text-lg font-normal">
-                                Female
-                              </div>
-                            </div>
-                          </label>
-                        </li>
-                      </ul>
+                {/* check button for member */}
+                {isMember && (
+                  <div className="flex lg:justify-end mt-3">
+                    <div className="w-48 kiosk:w-64">
+                      <button
+                        onClick={checkMemberData}
+                        type="button"
+                        className=" items-center justify-center w-full py-5 px-5 flex gap-2 text-black bg-white border border-[#463E3F] rounded-lg cursor-pointer hover:text-white hover:bg-[#6C1E5D]"
+                      >
+                        <span className="inline cursor-pointer text-2xl">
+                          Check Member
+                        </span>
+                      </button>
                     </div>
-                  </>
-                ) : (
+                  </div>
+                )}
+                {/* close check button for member */}
+                
+
+                {/* manual input */}
+                {!filteredCustomer && !isMember && (
                   <>
                     {/* manual input value */}
                     {/* nama */}
-
                     <div className="mt-2">
                       <label className="text-lg text-[#463E3F] ">Nama</label>
                       <input
@@ -776,6 +848,82 @@ const ProductDetail = () => {
                       </li>
                     </ul>
                   </>
+                )}
+
+
+                {/* Conditionally display filtered customer data if found */}
+                {filteredCustomer && (
+                  <div>
+                    {/* nama */}
+                    <div className="mt-2">
+                      <label className="text-lg text-[#463E3F] ">Nama</label>
+                      <input
+                        type="text"
+                        value={filteredCustomer.name}
+                        className="border-slate-950 border-2 rounded-md block w-full p-3 mt-1 read-only:bg-[#e0e0e0]"
+                        readOnly
+                      />
+                    </div>
+                    {/* birthdate */}
+                    <div className="mt-5">
+                      <label className="font-sm text-[#463E3F] text-lg">
+                        Tanggal Lahir
+                      </label>
+                      <input
+                        type="date"
+                        value={formatDate(filteredCustomer.bod || "")}
+                        className="border-slate-950 border-2 rounded-md block w-full p-3 mt-1 read-only:bg-[#e0e0e0]"
+                        min="2007-01-01"
+                        readOnly
+                      />
+                    </div>
+                    {/* male/female */}
+                    <ul className="grid gap-4 max-w-80 grid-cols-2 w-1/2 text-center mt-5">
+                      <li className="max-w-40">
+                        <input
+                          type="radio"
+                          id="male"
+                          name="gender"
+                          value="male"
+                          checked={filteredCustomer.gender === "male"}
+                          className="hidden peer"
+                          readOnly
+                        />
+                        <label
+                          htmlFor="male"
+                          className="inline-flex items-center justify-center w-full p-5 text-black bg-white  rounded-lg cursor-pointer  peer-checked:border-[#B3B3B3] peer-checked:bg-[#6C1E5D]
+                  peer-checked:text-white hover:text-gray-600 hover:bg-gray-100 max-w-40 border-2 border-[#463E3F]"
+                        >
+                          <div className="block text-center">
+                            <div className="w-full text-lg font-normal text-center">
+                              Male
+                            </div>
+                          </div>
+                        </label>
+                      </li>
+                      <li className="max-w-40">
+                        <input
+                          type="radio"
+                          id="female"
+                          name="gender"
+                          value="female"
+                          className="hidden peer"
+                          checked={filteredCustomer.gender === "female"}
+                          readOnly
+                        />
+                        <label
+                          htmlFor="female"
+                          className="inline-flex items-center justify-center w-full p-5 text-black bg-white  rounded-lg cursor-pointer  peer-checked:border-[#B3B3B3] peer-checked:bg-[#6C1E5D] peer-checked:text-white hover:text-gray-600 hover:bg-gray-100  border-[#463E3F] max-w-40 border-2 "
+                        >
+                          <div className="block">
+                            <div className="w-full text-lg font-normal">
+                              Female
+                            </div>
+                          </div>
+                        </label>
+                      </li>
+                    </ul>
+                  </div>
                 )}
               </div>
 
