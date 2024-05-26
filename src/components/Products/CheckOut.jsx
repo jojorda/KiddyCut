@@ -1027,7 +1027,7 @@ function CheckOut({ isOpen, closeModal }) {
         // Coba untuk menavigasi
         navigate("/dashboard");
       }
-    } catch (error) {
+    } catch (error) {z
       console.error("Error during navigation:", error);
     }
   };
